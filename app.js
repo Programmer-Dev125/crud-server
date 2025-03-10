@@ -10,7 +10,7 @@ const data = [
 ];
 
 const server = createServer((req, res) => {
-  res.setHeader("access-control-allow-origin", "http://localhost:5173");
+  res.setHeader("access-control-allow-origin", "*");
   res.setHeader("content-type", "application/json");
 
   if (req.method === "GET") {
