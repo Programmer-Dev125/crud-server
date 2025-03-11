@@ -27,10 +27,9 @@ const server = createServer((req, res) => {
   } else if (req.method === "POST") {
     let isBody;
     req.on("data", (data) => {
-      isBody = JSON.stringify(data.toString());
+      isBody = JSON.parse(data.toString());
     });
     req.on("end", () => {
-      console.log(isBody);
       const isObj = { id: data.length + 1, name: isBody.name };
       const ln = data.length;
       data.push(isObj);
