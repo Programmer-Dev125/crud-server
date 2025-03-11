@@ -4,7 +4,6 @@ import mongoose, { Schema } from "mongoose";
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST;
 const URL = process.env.MONGO_URL;
-const DB = process.env.DB_NAME;
 const COLL = process.env.DB_COLLECTION;
 
 const schema = new Schema({
@@ -12,7 +11,7 @@ const schema = new Schema({
   name: String,
 });
 
-const conn = mongoose.createConnection(`${URL}/${DB}`);
+const conn = mongoose.createConnection(URL);
 
 const isModel = conn.model("myModel", schema, COLL);
 
