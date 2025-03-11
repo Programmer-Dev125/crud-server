@@ -41,6 +41,29 @@ const server = createServer((req, res) => {
         res.end(JSON.stringify({ error: "Failed to submit user" }));
       }
     });
+  } else if (req.method === "PUT") {
+    const isId = parseInt(req.headers["x-user-id"]);
+    let isName;
+    req.on("data", (data) => {
+      isName = JSON.parse(data.toString());
+    });
+    req.on("end", () => {
+      let hasEdit = false;
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].id !== isId) continue;
+        data[i].name = isName.name;
+        hasEdit = true;
+      }
+      if (hasEdit) {
+        res.writeHead(200);
+        res.end(
+          JSON.stringify({ success: "The user is changed", users: data })
+        );
+      } else {
+        res.writeHead(400);
+        res.end(JSON.stringify({ error: "Error updating data" }));
+      }
+    });
   } else {
     res.writeHead(405);
     res.end(JSON.stringify({ error: "Method not supported" }));
