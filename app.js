@@ -14,6 +14,7 @@ const server = createServer((req, res) => {
   res.setHeader("access-control-allow-origin", "*");
   res.setHeader("content-type", "application/json");
   res.setHeader("access-control-allow-headers", "content-type");
+  res.setHeader("access-control-allow-methods", "GET, POST, PUT, DELETE");
 
   if (req.method === "OPTIONS") {
     res.writeHead(200);
