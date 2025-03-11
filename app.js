@@ -10,8 +10,8 @@ const USER = process.env.MONGOUSER;
 const PASSWORD = process.env.MONGOPASSWORD;
 
 const schema = new Schema({
-  id: { type: Number, require: true, unique: true },
-  name: { type: String, require: true, unique: true },
+  id: Number,
+  name: String,
 });
 
 const conn = mongoose.createConnection(`${URL}/${DB}`);
