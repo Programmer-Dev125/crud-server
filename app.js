@@ -30,6 +30,7 @@ const server = createServer((req, res) => {
       isBody = JSON.stringify(data.toString());
     });
     req.on("end", () => {
+      console.log(isBody);
       const isObj = { id: data.length + 1, name: isBody.name };
       const ln = data.length;
       data.push(isObj);
