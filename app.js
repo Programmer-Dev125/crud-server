@@ -6,8 +6,6 @@ const HOST = process.env.HOST;
 const URL = process.env.MONGO_URL;
 const DB = process.env.DB_NAME;
 const COLL = process.env.DB_COLLECTION;
-const USER = process.env.MONGOUSER;
-const PASSWORD = process.env.MONGOPASSWORD;
 
 const schema = new Schema({
   id: Number,
