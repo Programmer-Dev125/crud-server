@@ -1,8 +1,8 @@
 import mongoose, { Schema } from "mongoose";
 import http from "node:http";
 
-// const port = process.env.PORT;
-// const host = process.env.HOST;
+const port = process.env.PORT;
+const host = process.env.HOST;
 const URL = process.env.MONGO_URL;
 
 const conn = mongoose.createConnection(URL);
