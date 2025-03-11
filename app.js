@@ -1,16 +1,24 @@
-import { error } from "node:console";
 import { createServer } from "node:http";
+import mongoose, { Schema } from "mongoose";
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST;
+const URL = process.env.MONGO_URL;
+const DB = process.env.DB_NAME;
+const COLL = process.env.DB_COLLECTION;
 
-const data = [
-  { id: 1, name: "John Doe" },
-  { id: 2, name: "Jane Doe" },
-  { id: 3, name: "Josh Doe" },
-];
+const schema = new Schema({
+  id: { type: Number, require: true, unique: true },
+  name: { type: String, require: true, unique: true },
+});
 
-const server = createServer((req, res) => {
+const conn = mongoose.createConnection(URL, {
+  dbName: DB,
+});
+
+const isModel = conn.model("myModel", schema, COLL);
+
+const server = createServer(async (req, res) => {
   res.setHeader("access-control-allow-origin", "*");
   res.setHeader("content-type", "application/json");
   res.setHeader("access-control-allow-headers", "content-type, x-user-id");
@@ -22,63 +30,50 @@ const server = createServer((req, res) => {
     return;
   }
 
-  if (req.method === "GET") {
-    res.writeHead(200);
-    res.end(JSON.stringify(data));
-  } else if (req.method === "POST") {
-    let isBody;
-    req.on("data", (data) => {
-      isBody = JSON.parse(data.toString());
-    });
-    req.on("end", () => {
-      const isObj = { id: data.length + 1, name: isBody.name };
-      const ln = data.length;
-      data.push(isObj);
-      if (ln < data.length) {
+  switch (req.method) {
+    case "GET":
+      const data = await isModel.find({}, { _id: 0, __v: 0 });
+      if (Array.isArray(data)) {
         res.writeHead(200);
         res.end(JSON.stringify(data));
       } else {
-        res.writeHead(400);
-        res.end(JSON.stringify({ error: "Failed to submit user" }));
+        res.writeHead(500);
+        res.end(JSON.stringify({ error: "Server failed to fetch data" }));
       }
-    });
-  } else if (req.method === "PUT") {
-    const isId = parseInt(req.headers["x-user-id"]);
-    let isName;
-    req.on("data", (data) => {
-      isName = JSON.parse(data.toString());
-    });
-    req.on("end", () => {
-      let hasEdit = false;
-      for (let i = 0; i < data.length; i++) {
-        if (data[i].id !== isId) continue;
-        data[i].name = isName.name;
-        hasEdit = true;
-      }
-      if (hasEdit) {
-        res.writeHead(200);
-        res.end(
-          JSON.stringify({ success: "The user is changed", users: data })
-        );
-      } else {
-        res.writeHead(400);
-        res.end(JSON.stringify({ error: "Error updating data" }));
-      }
-    });
-  } else if (req.method === "DELETE") {
-    const isId = parseInt(req.headers["x-user-id"]);
-    for (let i = 0; i < data.length; i++) {
-      if (data[i].id !== isId) continue;
-      data.splice(i, 1);
-      res.writeHead(200);
-      res.end(JSON.stringify({ succes: "The user is deleted", users: data }));
-      return;
-    }
-    res.writeHead(400);
-    res.end(JSON.stringify({ error: "Error deleting user" }));
-  } else {
-    res.writeHead(405);
-    res.end(JSON.stringify({ error: "Method not supported" }));
+      break;
+    case "POST":
+      let isBody;
+      req.on("data", (data) => {
+        isBody = JSON.parse(data.toString());
+      });
+      req.on("end", async () => {
+        const isExist = await isModel.exists({
+          name: { $regex: new RegExp(`^${isBody.name}$`, "i") },
+        });
+        if (isExist === null) {
+          const lastId = await isModel.findOne({}, { _id: 0, id: 1 }).sort({
+            id: -1,
+          });
+          const isId = lastId ? lastId + 1 : 1;
+          const obj = { id: isId, ...isBody };
+          const toInsert = await isModel.create(obj, { ordered: true });
+          if (toInsert) {
+            res.writeHead(201);
+            res.end(JSON.stringify({ success: "Data inserted" }));
+          } else {
+            res.writeHead(500);
+            res.end(JSON.stringify({ error: "Error submitting data" }));
+          }
+        } else {
+          res.writeHead(409);
+          res.end(JSON.stringify({ error: "Username already exist" }));
+        }
+      });
+      break;
+    default:
+      res.writeHead(405);
+      res.end(JSON.stringify({ error: "Method not supported" }));
+      break;
   }
 });
 
