@@ -14,11 +14,7 @@ const schema = new Schema({
   name: { type: String, require: true, unique: true },
 });
 
-const conn = mongoose.createConnection(URL, {
-  dbName: DB,
-  user: USER,
-  pass: PASSWORD,
-});
+const conn = mongoose.createConnection(`${URL}/${DB}`);
 
 const isModel = conn.model("myModel", schema, COLL);
 
