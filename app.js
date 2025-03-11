@@ -65,6 +65,17 @@ const server = createServer((req, res) => {
         res.end(JSON.stringify({ error: "Error updating data" }));
       }
     });
+  } else if (req.method === "DELETE") {
+    const isId = parseInt(req.headers["x-user-id"]);
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].id !== isId) continue;
+      data.splice(i, 1);
+      res.writeHead(200);
+      res.end(JSON.stringify({ succes: "The user is deleted", users: data }));
+      return;
+    }
+    res.writeHead(400);
+    res.end(JSON.stringify({ error: "Error deleting user" }));
   } else {
     res.writeHead(405);
     res.end(JSON.stringify({ error: "Method not supported" }));
