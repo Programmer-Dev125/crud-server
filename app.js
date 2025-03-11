@@ -3,26 +3,28 @@ import mongoose, { Schema } from "mongoose";
 const URL = process.env.MONGO_URL;
 const COLL = process.env.DB_COLLECTION;
 
-const schema = new Schema({
-  id: Number,
-  name: String,
-  email: String,
-});
+console.log(URL);
 
-const conn = mongoose.createConnection(URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-const isModel = conn.model("myModel", schema, COLL);
+// const schema = new Schema({
+//   id: Number,
+//   name: String,
+//   email: String,
+// });
 
-isModel.create(
-  [
-    { id: 1, name: "John Doe", email: "johndoe@gmail.com" },
-    { id: 2, name: "Jane Doe", email: "janedoe@gmail.com" },
-    { id: 3, name: "Josh Doe", email: "joshdoe@gmail.com" },
-  ],
-  { ordered: true }
-);
+// const conn = mongoose.createConnection(URL, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
+// const isModel = conn.model("myModel", schema, COLL);
+
+// isModel.create(
+//   [
+//     { id: 1, name: "John Doe", email: "johndoe@gmail.com" },
+//     { id: 2, name: "Jane Doe", email: "janedoe@gmail.com" },
+//     { id: 3, name: "Josh Doe", email: "joshdoe@gmail.com" },
+//   ],
+//   { ordered: true }
+// );
 
 // import { createServer } from "node:http";
 
