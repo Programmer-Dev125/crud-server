@@ -1,8 +1,5 @@
-import { createServer } from "node:http";
 import mongoose, { Schema } from "mongoose";
 
-const PORT = process.env.PORT || 3000;
-const HOST = process.env.HOST;
 const URL = process.env.MONGO_URL;
 const COLL = process.env.DB_COLLECTION;
 
@@ -12,7 +9,10 @@ const schema = new Schema({
   email: String,
 });
 
-const conn = mongoose.createConnection(URL);
+const conn = mongoose.createConnection(URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 const isModel = conn.model("myModel", schema, COLL);
 
 isModel.create(
@@ -23,6 +23,11 @@ isModel.create(
   ],
   { ordered: true }
 );
+
+// import { createServer } from "node:http";
+
+// const PORT = process.env.PORT || 3000;
+// const HOST = process.env.HOST;
 
 // const server = createServer(async (req, res) => {
 //   res.setHeader("access-control-allow-origin", "*");
